@@ -1,16 +1,18 @@
 <?php
-/*
-Plugin Name: PiruWebP Optimizer
-Description: Optimiza las imágenes y convierte formatos de imagen a WebP al subirlos.
-Version: 0.0.1
-Author: Pirulug
-GitHub Plugin URI: https://github.com/pirulug/piruwebp-optimizer
+/**
+ * Plugin Name: PiruWebP Optimizer
+ * Description: Optimiza las imágenes y convierte formatos de imagen a WebP al subirlos.
+ * Version: 0.0.2
+ * Author: Pirulug
+ * Author URI: https://github.com/pirulug
+ * GitHub Plugin URI: https://github.com/pirulug/piruwebp-optimizer
 */
 
-// Hook para procesar imágenes al subirlas
-add_filter('wp_handle_upload', 'prwo_convert_to_webp');
 
-function prwo_convert_to_webp($upload) {
+// Hook para procesar imágenes al subirlas
+add_filter('wp_handle_upload', 'prwp_convert_to_webp');
+
+function prwp_convert_to_webp($upload) {
   // Verificar que el archivo subido es una imagen
   $image_types = ['image/jpeg', 'image/png'];
   if (in_array($upload['type'], $image_types)) {
@@ -43,15 +45,15 @@ function prwo_convert_to_webp($upload) {
 }
 
 // Añadir una columna nueva a la tabla de medios para mostrar el peso del archivo y el botón de conversión
-add_filter('manage_media_columns', 'prwo_add_file_size_column');
-function prwo_add_file_size_column($columns) {
+add_filter('manage_media_columns', 'prwp_add_file_size_column');
+function prwp_add_file_size_column($columns) {
   $columns['file_size'] = 'File Size';
   return $columns;
 }
 
 // Mostrar el peso del archivo y el botón de conversión en la columna
-add_action('manage_media_custom_column', 'prwo_show_file_size_and_button', 10, 2);
-function prwo_show_file_size_and_button($column_name, $post_id) {
+add_action('manage_media_custom_column', 'prwp_show_file_size_and_button', 10, 2);
+function prwp_show_file_size_and_button($column_name, $post_id) {
   if ($column_name == 'file_size') {
     $file_path = get_attached_file($post_id);
     $file_type = wp_check_filetype($file_path);
@@ -66,8 +68,8 @@ function prwo_show_file_size_and_button($column_name, $post_id) {
 }
 
 // Sistema de actualización desde GitHub
-add_action('admin_init', 'prwo_check_plugin_update_from_github');
-function prwo_check_plugin_update_from_github() {
+add_action('admin_init', 'prwp_check_plugin_update_from_github');
+function prwp_check_plugin_update_from_github() {
   $user            = 'pirulug';
   $repository      = 'piruwebp-optimizer';
   $current_version = '0.0.1';
