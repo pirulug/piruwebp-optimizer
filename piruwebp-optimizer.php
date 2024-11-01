@@ -87,7 +87,7 @@ function prwp_settings_page() {
   ?>
   <div class="wrap">
     <h1>PiruWebP Optimizer</h1>
-    <p>Verifica si hay actualizaciones del plugin y aplícalas manualmente. Hola</p>
+    <p>Verifica si hay actualizaciones del plugin y aplícalas manualmente. 6</p>
     <form method="post" action="">
       <?php wp_nonce_field('prwp_check_update_nonce', 'prwp_check_update_nonce'); ?>
       <input type="submit" name="check_update" id="check_update" class="button button-primary"
