@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PiruWebP Optimizer
  * Description: Optimiza las imágenes y convierte formatos de imagen a WebP al subirlos.
- * Version: 0.0.3
+ * Version: 0.0.4
  * Author: Pirulug
  * Author URI: https://github.com/pirulug
  * GitHub Plugin URI: https://github.com/pirulug/piruwebp-optimizer
@@ -60,7 +60,7 @@ function prwp_show_file_size_and_button($column_name, $post_id) {
 
     if (file_exists($file_path)) {
       $file_size = filesize($file_path);
-      echo size_format($file_size, 2); // Muestra el tamaño en formato legible
+      echo size_format($file_size, 2); 
     } else {
       echo 'File not found';
     }
