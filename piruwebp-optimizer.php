@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PiruWebP Optimizer
  * Description: Optimiza las imágenes y convierte formatos de imagen a WebP al subirlos.
- * Version: 0.0.5
+ * Version: 0.0.6
  * Author: Pirulug
  * Author URI: https://github.com/pirulug
  * GitHub Plugin URI: https://github.com/pirulug/piruwebp-optimizer
@@ -87,7 +87,7 @@ function prwp_settings_page() {
   ?>
   <div class="wrap">
     <h1>PiruWebP Optimizer</h1>
-    <p>Verifica si hay actualizaciones del plugin y aplícalas manualmente.</p>
+    <p>Verifica si hay actualizaciones del plugin y aplícalas manualmente. Hola</p>
     <form method="post" action="">
       <?php wp_nonce_field('prwp_check_update_nonce', 'prwp_check_update_nonce'); ?>
       <input type="submit" name="check_update" id="check_update" class="button button-primary"
