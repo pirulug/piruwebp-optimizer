@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PiruWebP Optimizer
  * Description: Optimiza las imágenes y convierte formatos de imagen a WebP al subirlos.
- * Version: 0.0.4
+ * Version: 0.0.5
  * Author: Pirulug
  * Author URI: https://github.com/pirulug
  * GitHub Plugin URI: https://github.com/pirulug/piruwebp-optimizer
@@ -60,16 +60,50 @@ function prwp_show_file_size_and_button($column_name, $post_id) {
 
     if (file_exists($file_path)) {
       $file_size = filesize($file_path);
-      echo size_format($file_size, 2); 
+      echo size_format($file_size, 2);
     } else {
       echo 'File not found';
     }
   }
 }
 
-// Sistema de actualización desde GitHub
-add_action('admin_init', 'prwp_check_plugin_update_from_github');
-function prwp_check_plugin_update_from_github() {
+// Agregar una página de configuración del plugin en el menú de administración
+add_action('admin_menu', 'prwp_add_admin_menu');
+
+function prwp_add_admin_menu() {
+  add_menu_page(
+    'PiruWebP Optimizer',
+    'PiruWebP Optimizer',
+    'manage_options',
+    'prwp-optimizer',
+    'prwp_settings_page',
+    'dashicons-update',
+    100
+  );
+}
+
+// Función para renderizar la página de configuración del plugin
+function prwp_settings_page() {
+  ?>
+  <div class="wrap">
+    <h1>PiruWebP Optimizer</h1>
+    <p>Verifica si hay actualizaciones del plugin y aplícalas manualmente.</p>
+    <form method="post" action="">
+      <?php wp_nonce_field('prwp_check_update_nonce', 'prwp_check_update_nonce'); ?>
+      <input type="submit" name="check_update" id="check_update" class="button button-primary"
+        value="Comprobar Actualizaciones">
+    </form>
+  </div>
+  <?php
+
+  // Comprobar si se ha hecho clic en el botón
+  if (isset($_POST['check_update']) && check_admin_referer('prwp_check_update_nonce', 'prwp_check_update_nonce')) {
+    prwp_check_and_update_plugin();
+  }
+}
+
+// Función para verificar y actualizar el plugin desde GitHub
+function prwp_check_and_update_plugin() {
   $user       = 'pirulug';
   $repository = 'piruwebp-optimizer';
 
@@ -81,16 +115,33 @@ function prwp_check_plugin_update_from_github() {
   $response = wp_remote_get("https://api.github.com/repos/$user/$repository/releases/latest");
 
   if (is_wp_error($response)) {
+    echo '<div class="notice notice-error"><p>Error al comprobar actualizaciones.</p></div>';
     return;
   }
 
   $latest_release = json_decode(wp_remote_retrieve_body($response));
 
   if (isset($latest_release->tag_name) && version_compare($latest_release->tag_name, $current_version, '>')) {
-    add_action('admin_notices', function () use ($latest_release) {
-      echo '<div class="notice notice-warning is-dismissible">
-              <p>Una nueva versión del plugin PiruWebP Optimizer está disponible. <a href="' . esc_url($latest_release->html_url) . '">Actualiza aquí</a>.</p>
-            </div>';
-    });
+    // Descargar y actualizar automáticamente
+    $download_url = $latest_release->zipball_url;
+    $tmp_file     = download_url($download_url);
+
+    if (is_wp_error($tmp_file)) {
+      echo '<div class="notice notice-error"><p>Error al descargar la actualización.</p></div>';
+      return;
+    }
+
+    // Descomprimir y reemplazar el plugin
+    $result = unzip_file($tmp_file, WP_PLUGIN_DIR);
+    unlink($tmp_file); // Limpiar archivo temporal
+
+    if (is_wp_error($result)) {
+      echo '<div class="notice notice-error"><p>Error al descomprimir el archivo de actualización.</p></div>';
+      return;
+    }
+
+    echo '<div class="notice notice-success is-dismissible"><p>El plugin PiruWebP Optimizer se ha actualizado a la última versión (' . esc_html($latest_release->tag_name) . ').</p></div>';
+  } else {
+    echo '<div class="notice notice-info is-dismissible"><p>El plugin ya está actualizado.</p></div>';
   }
 }
