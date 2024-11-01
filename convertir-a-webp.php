@@ -68,8 +68,8 @@ function prwo_show_file_size_and_button($column_name, $post_id) {
 // Sistema de actualización desde GitHub
 add_action('admin_init', 'prwo_check_plugin_update_from_github');
 function prwo_check_plugin_update_from_github() {
-  $user            = 'pirulug'; // Cambia esto por tu usuario de GitHub
-  $repository      = 'piruwebp-optimizer'; // Cambia esto por el nombre de tu repositorio
+  $user            = 'pirulug';
+  $repository      = 'piruwebp-optimizer';
   $current_version = '0.0.1';
 
   $response = wp_remote_get("https://api.github.com/repos/$user/$repository/releases/latest");
