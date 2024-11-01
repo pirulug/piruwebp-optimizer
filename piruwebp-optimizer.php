@@ -2,11 +2,11 @@
 /**
  * Plugin Name: PiruWebP Optimizer
  * Description: Optimiza las imágenes y convierte formatos de imagen a WebP al subirlos.
- * Version: 0.0.2
+ * Version: 0.0.3
  * Author: Pirulug
  * Author URI: https://github.com/pirulug
  * GitHub Plugin URI: https://github.com/pirulug/piruwebp-optimizer
-*/
+ */
 
 
 // Hook para procesar imágenes al subirlas
@@ -70,22 +70,26 @@ function prwp_show_file_size_and_button($column_name, $post_id) {
 // Sistema de actualización desde GitHub
 add_action('admin_init', 'prwp_check_plugin_update_from_github');
 function prwp_check_plugin_update_from_github() {
-  $user            = 'pirulug';
-  $repository      = 'piruwebp-optimizer';
-  $current_version = '0.0.1';
+  $user       = 'pirulug';
+  $repository = 'piruwebp-optimizer';
 
+  // Leer la versión actual del plugin desde los datos del plugin
+  $plugin_data     = get_file_data(__FILE__, ['Version' => 'Version']);
+  $current_version = $plugin_data['Version'];
+
+  // Hacer la solicitud a GitHub
   $response = wp_remote_get("https://api.github.com/repos/$user/$repository/releases/latest");
 
   if (is_wp_error($response)) {
     return;
   }
 
-  $plugin_data = json_decode(wp_remote_retrieve_body($response));
+  $latest_release = json_decode(wp_remote_retrieve_body($response));
 
-  if (isset($plugin_data->tag_name) && version_compare($plugin_data->tag_name, $current_version, '>')) {
-    add_action('admin_notices', function () use ($plugin_data) {
+  if (isset($latest_release->tag_name) && version_compare($latest_release->tag_name, $current_version, '>')) {
+    add_action('admin_notices', function () use ($latest_release) {
       echo '<div class="notice notice-warning is-dismissible">
-              <p>A new version of the PiruWebP Optimizer plugin is available. <a href="' . $plugin_data->html_url . '">Update here</a>.</p>
+              <p>Una nueva versión del plugin PiruWebP Optimizer está disponible. <a href="' . esc_url($latest_release->html_url) . '">Actualiza aquí</a>.</p>
             </div>';
     });
   }
